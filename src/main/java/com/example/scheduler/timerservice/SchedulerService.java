@@ -1,9 +1,6 @@
 package com.example.scheduler.timerservice;
-
-import com.example.scheduler.jobs.HelloWorldJob;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import org.apache.commons.logging.Log;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
