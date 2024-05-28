@@ -7,9 +7,16 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Timer;
+import java.util.stream.Collectors;
 
 @Service
 public class SchedulerService {
@@ -31,8 +38,35 @@ public class SchedulerService {
         } catch (SchedulerException e) {
             LOG.error(e.getMessage(), e);
         }
-
     }
+    public List<TimerInfo> getAllRunningTimers(){
+        try {
+            // 스케줄러에 기록된 모든 작업의 JobKey를 가져옴
+            return scheduler.getJobKeys(GroupMatcher.anyGroup())
+                    .stream()
+                    .map(jobKey ->
+                    {
+                        try {
+                            //JobKey에 해당하는  JobDetail을 가져옴
+                            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+                            return (TimerInfo) jobDetail.getJobDataMap().get(jobKey.getName());
+                        } catch (SchedulerException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+        } catch (SchedulerException e) {
+            LOG.error(e.getMessage(), e);
+            return Collections.emptyList();
+        }
+
+        // 메서드는 Quartz 스케줄러에서 현재 실행 중인 모든 타이머 정보를 가져와 리스트로 반환.
+        //스케줄러에 등록된 모든 작업의 키를 가져오고, 각 작업에 대한 상세 정보를 추출하여 TimerInfo 객체로 변환.
+        //예외 발생 시 로그를 남기고 빈 리스트를 반환.
+
+    }//Group Matcher
 
     @PostConstruct
     public void init(){
