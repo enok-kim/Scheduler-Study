@@ -29,4 +29,7 @@ public class PlayGroundService {
     public List<TimerInfo> getAllRunningTimer(){
         return scheduler.getAllRunningTimers();
     }
+    public TimerInfo getRunningTimer(String timerId){
+        return scheduler.getRunningTimer(timerId);
+    }
 }

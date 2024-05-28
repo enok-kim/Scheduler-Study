@@ -3,10 +3,7 @@ import com.example.scheduler.info.TimerInfo;
 import com.example.scheduler.utill.TimerUtill;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
+import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +64,21 @@ public class SchedulerService {
         //예외 발생 시 로그를 남기고 빈 리스트를 반환.
 
     }//Group Matcher
+
+    public TimerInfo getRunningTimer(String timerId){
+        try {
+            final JobDetail jobDetail = scheduler.getJobDetail(new JobKey(timerId));
+
+            if (jobDetail == null){
+                return null;
+            }
+
+            return (TimerInfo) jobDetail.getJobDataMap().get(timerId);
+        } catch (SchedulerException e) {
+            LOG.error(e.getMessage(), e);
+            return null;
+        }
+    }
 
     @PostConstruct
     public void init(){
